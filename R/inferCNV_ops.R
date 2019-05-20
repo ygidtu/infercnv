@@ -828,16 +828,15 @@ run <- function(infercnv_obj,
     
     
     ## This is a milestone step and results should always be examined here.
-    infercnv_obj_prelim <- infercnv_obj
     infercnv_obj_file = file.path(out_dir, "preliminary.infercnv_obj")
-    saveRDS(infercnv_obj_prelim, file=infercnv_obj_file)
+    saveRDS(infercnv_obj, file=infercnv_obj_file)
     
     if (! (no_prelim_plot | no_plot) ) {
         
         prelim_heatmap_png = "infercnv.preliminary.png"
         
         if (! file.exists(file.path(out_dir, prelim_heatmap_png))) {
-            plot_cnv(infercnv_obj_prelim,
+            plot_cnv(infercnv_obj,
                      k_obs_groups=k_obs_groups,
                      cluster_by_groups=cluster_by_groups,
                      cluster_references=cluster_references,
@@ -1014,7 +1013,7 @@ run <- function(infercnv_obj,
                 mcmc_obj <- readRDS(mcmc_obj_file)
             } else {
                 
-                mcmc_obj <- infercnv::inferCNVBayesNet( infercnv_obj     = infercnv_obj_prelim,
+                mcmc_obj <- infercnv::inferCNVBayesNet( infercnv_obj     = infercnv_obj,
                                                        HMM_states        = hmm.infercnv_obj@expr.data,
                                                        file_dir          = out_dir,
                                                        postMcmcMethod    = "removeCNV",
