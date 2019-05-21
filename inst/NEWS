@@ -1,3 +1,6 @@
+Changes in version 1.0.2 (2019-05-21)
++ Reduce peak memory usage.
++ Fix to subclusters definition when using a sparse matrix and a non random trees method with no references.
 Changes in version 1.0.1 (2019-05-20)
 + Improved when the clustering is defined for groups when running in sample mode.
 + Fixed support for NA to be understood as an output_format value to plot_cnv() in case a user only wants to generate the text outputs and not the plot.
