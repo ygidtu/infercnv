@@ -1,3 +1,9 @@
+Changes in version 1.0.3 (2019-07-05)
++ Fix missing dendrograms in text output when drawing figures.
++ Fix path to save object to when splitting references.
++ Fix file name creation when using num_ref_groups option.
++ Fix reference cells indices returned from method that splits references in num_ref_groups when references are not sorted and at the beginning of the matrix.
++ Fix to support of data.frame as input type for counts matrix.
 Changes in version 1.0.2 (2019-05-21)
 + Reduce peak memory usage.
 + Fix to subclusters definition when using a sparse matrix and a non random trees method with no references.
