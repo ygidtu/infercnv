@@ -1,3 +1,12 @@
+Changes in version 1.0.4 (2019-09-16)
++ Fix check that contig to cluster by was found when specified.
++ Added support to plot_cnv for cell groups with exactly 2 cells.
++ Fix which input file type is checked.
++ Made it so that plot_cnv recalculates clustering automatically if non null ref_contig argument is provided.
++ Fix for plot_cnv() when providing multiple ref_contigs and cluster_by_group is False.
++ Fix only 1/n genes being taken into account when using n ref_contig in plot_cnv.
++ Fix error in file creation when using multiple ref_contig and cluster_by_groups=FALSE in plot_cnv.
++ Bayesian filtering now preserves CNV ids in outputs
 Changes in version 1.0.3 (2019-07-05)
 + Fix missing dendrograms in text output when drawing figures.
 + Fix path to save object to when splitting references.
