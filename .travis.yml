@@ -1,9 +1,9 @@
 language: r
-r: bioc-devel
+r: bioc-release
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install r-cran-rjags 
+  - sudo apt-get install jags
 
 # r_build_args: --no-build-vignettes --no-manual --no-resave-data
 r_check_args: --no-build-vignettes # --no-manual
