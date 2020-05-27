@@ -72,7 +72,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
     
     if (ncol(tumor_expr_data) > 2) {
 
-        hc <- hclust(dist(t(tumor_expr_data)), method=hclust_method)
+        hc <- gpuHclust(gpu(t(tumor_expr_data)), method=hclust_method)
         
         tumor_subcluster_info$hc = hc
         
@@ -98,8 +98,8 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
             
         } else if (partition_method == 'qgamma') {
 
-            # library(fitdistrplus)
-            gamma_fit = fitdist(heights, 'gamma')
+            # library(fitrplus)
+            gamma_fit = fit(heights, 'gamma')
             shape = gamma_fit$estimate[1]
             rate = gamma_fit$estimate[2]
             cut_height=qgamma(p=1-p_val, shape=shape, rate=rate)
@@ -231,7 +231,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
         stop("Error, found too many names in current clade")
     }
     
-    hc <- hclust(dist(t(tumor_expr_data)), method=hclust_method)
+    hc <- gpuHclust(gpu(t(tumor_expr_data)), method=hclust_method)
 
     rand_params_info = .parameterize_random_cluster_heights(tumor_expr_data, hclust_method)
 
@@ -292,9 +292,9 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
     ## inspired by: https://www.frontiersin.org/articles/10.3389/fgene.2016.00144/full
 
     t_tumor.expr.data = t(expr_matrix) # cells as rows, genes as cols
-    d = dist(t_tumor.expr.data)
+    d = gpu(t_tumor.expr.data)
 
-    h_obs = hclust(d, method=hclust_method)
+    h_obs = gpuHclust(d, method=hclust_method)
 
         
     # permute by chromosomes
@@ -317,8 +317,8 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
         #message(sprintf("iter i:%d", i))
         rand.tumor.expr.data = permute_col_vals(t_tumor.expr.data)
         
-        rand.dist = dist(rand.tumor.expr.data)
-        h_rand <- hclust(rand.dist, method=hclust_method)
+        rand. = gpuDist(rand.tumor.expr.data)
+        h_rand <- gpuHclust(rand., method=hclust_method)
         h_rand_ex = h_rand
         max_rand_heights = c(max_rand_heights, max(h_rand$height))
     }
@@ -339,13 +339,13 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
     
     params_list <- list(h_obs=h_obs,
                         max_h=max_height,
-                        rand_max_height_dist=max_rand_heights,
+                        rand_max_height_=max_rand_heights,
                         ecdf=e,
                         h_rand_ex = h_rand_ex
                         )
     
     if (plot) {
-        .plot_tree_height_dist(params_list)
+        .plot_tree_height_(params_list)
     }
     
     
@@ -354,12 +354,12 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
 }
 
 
-.plot_tree_height_dist <- function(params_list, plot_title='tree_heights') {
+.plot_tree_height_ <- function(params_list, plot_title='tree_heights') {
 
     mf = par(mfrow=(c(3,1)))
 
     ## density plot
-    rand_height_density = density(params_list$rand_max_height_dist)
+    rand_height_density = density(params_list$rand_max_height_)
     
     xlim=range(params_list$max_h, rand_height_density$x)
     ylim=range(rand_height_density$y)

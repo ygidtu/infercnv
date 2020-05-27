@@ -225,7 +225,7 @@ run <- function(infercnv_obj,
                 cluster_references=TRUE,
                 k_obs_groups=1,
 
-                hclust_method='ward.D2',
+                hclust_method='ward.D',
 
                 max_centered_threshold=3, # or set to a specific value or "auto", or NA to turn off
                 scale_data=FALSE,
@@ -330,6 +330,7 @@ run <- function(infercnv_obj,
     flog.info(paste("::process_data:Start", sep=""))
     
     infercnv.env$GLOBAL_NUM_THREADS <- num_threads
+    registerDoMC(num_threads)
     if (is.null(out_dir)) {
         flog.error("Error, out_dir is NULL, please provide a path.")
         stop("out_dir is NULL")
@@ -1541,7 +1542,9 @@ subtract_ref_expr_from_obs <- function(infercnv_obj, inv_log=FALSE, use_bounds=T
         return(row_init)
     }
     
-    subtr_data <- do.call(rbind, lapply(seq_len(nrow(expr_matrix)), subtract_normal_expr_fun))
+    subtr_data <- foreach(i = seq_len(nrow(expr_matrix)), .combine="rbind") %dopar% {
+        subtract_normal_expr_fun(i)
+    }
     rownames(subtr_data) <- my.rownames
     colnames(subtr_data) <- my.colnames
     
@@ -1687,7 +1690,7 @@ split_references <- function(infercnv_obj,
     
     ref_expr_matrix = infercnv_obj@expr.data[ , get_reference_grouped_cell_indices(infercnv_obj) ]
     
-    hc <- hclust(dist(t(ref_expr_matrix)), method=hclust_method)
+    hc <- gpuHclust(gpuDist(t(ref_expr_matrix)), method=hclust_method)
     
     split_groups <- cutree(hc, k=num_groups)
     
@@ -2999,7 +3002,7 @@ cross_cell_normalize <- function(infercnv_obj) {
         
         grp_expr_data = infercnv_obj@expr.data[, grp_cell_idx, drop=FALSE]
         
-        hc <- hclust(dist(t(grp_expr_data)), method=hclust_method)
+        hc <- gpuHclust(gpuDist(t(grp_expr_data)), method=hclust_method)
 
         infercnv_obj@tumor_subclusters$hc[[grp_name]] <- hc
     }
