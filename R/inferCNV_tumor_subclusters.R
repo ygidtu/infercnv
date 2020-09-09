@@ -72,7 +72,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
     
     if (ncol(tumor_expr_data) > 2) {
 
-        hc <- gpuHclust(gpu(t(tumor_expr_data)), method=hclust_method)
+        hc <- gpuHclust(gpuDist(t(tumor_expr_data)), method=hclust_method)
         
         tumor_subcluster_info$hc = hc
         
@@ -231,7 +231,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
         stop("Error, found too many names in current clade")
     }
     
-    hc <- gpuHclust(gpu(t(tumor_expr_data)), method=hclust_method)
+    hc <- gpuHclust(gpuDist(t(tumor_expr_data)), method=hclust_method)
 
     rand_params_info = .parameterize_random_cluster_heights(tumor_expr_data, hclust_method)
 
@@ -292,7 +292,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
     ## inspired by: https://www.frontiersin.org/articles/10.3389/fgene.2016.00144/full
 
     t_tumor.expr.data = t(expr_matrix) # cells as rows, genes as cols
-    d = gpu(t_tumor.expr.data)
+    d = gpuDist(t_tumor.expr.data)
 
     h_obs = gpuHclust(d, method=hclust_method)
 
