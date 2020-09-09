@@ -10,14 +10,15 @@ Visit project [wiki](https://github.com/broadinstitute/inferCNV/wiki) for InferC
 
 rpud需要编译protoc (v3.14)
 
-## GPUTools
+## gputools
 
-Download [github](https://github.com/nullsatz/gputools)
+download [github](https://github.com/nullsatz/gputools)
 
-Installation `R CMD INSTALL --configure-args="--with-nvcc=/usr/local/cuda-10.0/bin/nvcc --with-r-lib=/usr/local/lib/R/include/ --with-r-include=/usr/local/lib/R/include" gputools_1.1.tar.gz`
+installation `r cmd install --configure-args="--with-nvcc=/usr/local/cuda-10.0/bin/nvcc --with-r-lib=/usr/local/lib/r/include/ --with-r-include=/usr/local/lib/r/include" gputools_1.1.tar.gz`
 
-**Note**: from the configure, the compile program need the right `R.h` path. just use the `--with-r-include` to specify it.
+**note**: from the configure, the compile program need the right `r.h` path. just use the `--with-r-include` to specify it.
 
+Or just using https://github.com/Moore123/gputools , this version is updated for newer version of R and nvdia driver
 
 # inferCNV
 

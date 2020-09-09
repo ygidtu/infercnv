@@ -41,8 +41,8 @@
 #'
 #'
 #' @param hclust_method Method used for hierarchical clustering of cells. Valid choices are:
-#' "ward.D", "ward.D2", "single", "complete", "average", "mcquitty", "median", "centroid".
-#' default("ward.D2")
+#' "ward", "ward", "single", "complete", "average", "mcquitty", "median", "centroid".
+#' default("ward")
 #'
 #' @param max_centered_threshold The maximum value a value can have after
 #'                                   centering. Also sets a lower bound of
@@ -225,7 +225,7 @@ run <- function(infercnv_obj,
                 cluster_references=TRUE,
                 k_obs_groups=1,
 
-                hclust_method='ward.D',
+                hclust_method='ward',
 
                 max_centered_threshold=3, # or set to a specific value or "auto", or NA to turn off
                 scale_data=FALSE,
