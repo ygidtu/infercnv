@@ -72,7 +72,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
     
     if (ncol(tumor_expr_data) > 2) {
 
-        hc <- gpuHclust(gpuDist(t(tumor_expr_data)), method=hclust_method)
+        hc <- scipy_hclust(t(tumor_expr_data), method=hclust_method)
         
         tumor_subcluster_info$hc = hc
         
@@ -84,7 +84,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
 
             cut_height = p_val * max(heights)
             flog.info(sprintf("cut height based on p_val(%g) = %g and partition_method: %s", p_val, cut_height, partition_method))
-            grps <- cutree(hc, h=cut_height) # will just be one cluster if height > max_height
+            grps <- scipy_cutree(hc, h=cut_height) # will just be one cluster if height > max_height
 
             
         } else if (partition_method == 'qnorm') {
@@ -94,7 +94,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
             
             cut_height = qnorm(p=1-p_val, mean=mu, sd=sigma)
             flog.info(sprintf("cut height based on p_val(%g) = %g and partition_method: %s", p_val, cut_height, partition_method))
-            grps <- cutree(hc, h=cut_height) # will just be one cluster if height > max_height
+            grps <- scipy_cutree(hc, h=cut_height) # will just be one cluster if height > max_height
             
         } else if (partition_method == 'qgamma') {
 
@@ -104,7 +104,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
             rate = gamma_fit$estimate[2]
             cut_height=qgamma(p=1-p_val, shape=shape, rate=rate)
             flog.info(sprintf("cut height based on p_val(%g) = %g and partition_method: %s", p_val, cut_height, partition_method))
-            grps <- cutree(hc, h=cut_height) # will just be one cluster if height > max_height
+            grps <- scipy_cutree(hc, h=cut_height) # will just be one cluster if height > max_height
             
         #} else if (partition_method == 'shc') {
         #    
@@ -112,7 +112,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
             
         } else if (partition_method == 'none') {
             
-            grps <- cutree(hc, k=1)
+            grps <- scipy_cutree(hc, k=1)
             
         } else {
             stop("Error, not recognizing parition_method")
@@ -231,7 +231,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
         stop("Error, found too many names in current clade")
     }
     
-    hc <- gpuHclust(gpuDist(t(tumor_expr_data)), method=hclust_method)
+    hc <- scipy_hclust(t(tumor_expr_data), method=hclust_method)
 
     rand_params_info = .parameterize_random_cluster_heights(tumor_expr_data, hclust_method)
 
@@ -253,7 +253,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
         ## keep on cutting.
         cut_height = mean(c(h[length(h)], h[length(h)-1]))
         message(sprintf("cutting at height: %g",  cut_height))
-        grps = cutree(h_obs, h=cut_height)
+        grps = scipy_cutree(h_obs, h=cut_height)
         print(grps)
         uniqgrps = unique(grps)
         
@@ -291,12 +291,9 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
     
     ## inspired by: https://www.frontiersin.org/articles/10.3389/fgene.2016.00144/full
 
-    t_tumor.expr.data = t(expr_matrix) # cells as rows, genes as cols
-    d = gpuDist(t_tumor.expr.data)
-
-    h_obs = gpuHclust(d, method=hclust_method)
-
-        
+    # cells as rows, genes as cols
+    h_obs = scipy_hclust(t(expr_matrix), method=hclust_method)
+ 
     # permute by chromosomes
     permute_col_vals <- function(df) {
 
@@ -317,8 +314,7 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
         #message(sprintf("iter i:%d", i))
         rand.tumor.expr.data = permute_col_vals(t_tumor.expr.data)
         
-        rand. = gpuDist(rand.tumor.expr.data)
-        h_rand <- gpuHclust(rand., method=hclust_method)
+        h_rand <- scipy_hclust(rand.tumor.expr.data, method=hclust_method)
         h_rand_ex = h_rand
         max_rand_heights = c(max_rand_heights, max(h_rand$height))
     }
@@ -344,10 +340,9 @@ define_signif_tumor_subclusters <- function(infercnv_obj, p_val, hclust_method, 
                         h_rand_ex = h_rand_ex
                         )
     
-    if (plot) {
-        .plot_tree_height_(params_list)
-    }
-    
+    # if (plot) {
+    #     .plot_tree_height_(params_list)
+    # }
     
     return(params_list)
     

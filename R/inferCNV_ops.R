@@ -1690,9 +1690,9 @@ split_references <- function(infercnv_obj,
     
     ref_expr_matrix = infercnv_obj@expr.data[ , get_reference_grouped_cell_indices(infercnv_obj) ]
     
-    hc <- gpuHclust(gpuDist(t(ref_expr_matrix)), method=hclust_method)
+    hc <- scipy_hclust(t(ref_expr_matrix), method=hclust_method)
     
-    split_groups <- cutree(hc, k=num_groups)
+    split_groups <- scipy_cutree(hc, k=num_groups)
     
     ref_groups <- list()
     
@@ -3002,7 +3002,7 @@ cross_cell_normalize <- function(infercnv_obj) {
         
         grp_expr_data = infercnv_obj@expr.data[, grp_cell_idx, drop=FALSE]
         
-        hc <- gpuHclust(gpuDist(t(grp_expr_data)), method=hclust_method)
+        hc <- scipy_hclust(t(grp_expr_data), method=hclust_method)
 
         infercnv_obj@tumor_subclusters$hc[[grp_name]] <- hc
     }

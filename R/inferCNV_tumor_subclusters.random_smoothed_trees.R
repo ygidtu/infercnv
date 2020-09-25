@@ -73,7 +73,7 @@ define_signif_tumor_subclusters_via_random_smooothed_trees <- function(infercnv_
     sm_tumor_expr_data = .center_columns(sm_tumor_expr_data, 'median')
         
     
-    hc <- gpuHclust(gpuDist(t(sm_tumor_expr_data)), method=hclust_method)
+    hc <- scipy_hclust(t(sm_tumor_expr_data), method=hclust_method)
     
     tumor_subcluster_info$hc = hc
     
@@ -164,7 +164,7 @@ define_signif_tumor_subclusters_via_random_smooothed_trees <- function(infercnv_
         ## keep on cutting.
         cut_height = mean(c(h[length(h)], h[length(h)-1]))
         flog.info(sprintf("cutting at height: %g",  cut_height))
-        grps = cutree(h_obs, h=cut_height)
+        grps = scipy_cutree(h_obs, h=cut_height)
         print(grps)
         uniqgrps = unique(grps)
         
@@ -221,11 +221,8 @@ define_signif_tumor_subclusters_via_random_smooothed_trees <- function(infercnv_
     sm_expr_data = apply(expr_matrix, 2, caTools::runmean, k=window_size)
     sm_expr_data = scale(sm_expr_data, center=TRUE, scale=FALSE)
     
-    d = gpuDist(t(sm_expr_data))
+    h_obs = scipy_hclust(t(sm_expr_data), method=hclust_method)
     
-    h_obs = gpuHclust(d, method=hclust_method)
-    
-        
     # permute by chromosomes
     permute_col_vals <- function(df) {
         ## cells as rows, features as columns
@@ -258,9 +255,8 @@ define_signif_tumor_subclusters_via_random_smooothed_trees <- function(infercnv_
         ## smooth it and re-center:
         sm.rand.tumor.expr.data = apply(rand.tumor.expr.data, 2, caTools::runmean, k=window_size)
         sm.rand.tumor.expr.data = scale(sm.rand.tumor.expr.data, center=TRUE, scale=FALSE)
-        
-        rand.dist = gpuDist(t(sm.rand.tumor.expr.data))
-        h_rand <- gpuHclust(rand.dist, method=hclust_method)
+       
+        h_rand <- scipy_hclust(t(sm.rand.tumor.expr.data), method=hclust_method)
         max_rand_height <- max(h_rand$height)
 
         max_rand_height

@@ -2,23 +2,12 @@ Visit project [wiki](https://github.com/broadinstitute/inferCNV/wiki) for InferC
 
 ---
 
-# GPU version of inferCNV
+# CHANGELOG
 
-#Requirments
+- **2020.09.25**: 
+  1. using `scipy.cluster.hierarchy` to replace the R  default `hclust` and `gpuHclust`. `scipy` is way much faster and way much eaiser to deploy than gputools
+  2. disable multiple plots, due to scipy dengraom not working like R, and this may a little bit more faster
 
-尝试过用rpud，但是居然是闭源商业项目，收费太贵了
-
-rpud需要编译protoc (v3.14)
-
-## gputools
-
-download [github](https://github.com/nullsatz/gputools)
-
-installation `r cmd install --configure-args="--with-nvcc=/usr/local/cuda-10.0/bin/nvcc --with-r-lib=/usr/local/lib/r/include/ --with-r-include=/usr/local/lib/r/include" gputools_1.1.tar.gz`
-
-**note**: from the configure, the compile program need the right `r.h` path. just use the `--with-r-include` to specify it.
-
-Or just using https://github.com/Moore123/gputools , this version is updated for newer version of R and nvdia driver
 
 # inferCNV
 

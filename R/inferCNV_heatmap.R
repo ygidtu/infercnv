@@ -378,55 +378,55 @@ plot_cnv <- function(infercnv_obj,
 
     # Create file base for plotting output
     force_layout <- .plot_observations_layout(grouping_key_height=grouping_key_height, dynamic_extension=dynamic_extension)
-    .plot_cnv_observations(infercnv_obj=infercnv_obj,
-                          obs_data=obs_data,
-                          file_base_name=out_dir,
-                          do_plot=!is.na(output_format),
-                          output_filename_prefix=output_filename,
-                          cluster_contig=ref_contig,
-                          contigs=contigs,
-                          contig_colors=ct.colors[contigs],
-                          contig_labels=contig_labels,
-                          contig_names=contig_names,
-                          col_pal=custom_pal,
-                          contig_seps=col_sep,
-                          num_obs_groups=k_obs_groups,
-                          obs_annotations_groups=obs_annotations_groups,
-                          obs_annotations_names=obs_annotations_names,
-                          grouping_key_coln=grouping_key_coln[1],
-                          cluster_by_groups=cluster_by_groups,
-                          cnv_title=title,
-                          cnv_obs_title=obs_title,
-                          contig_lab_size=contig_cex,
-                          breaksList=breaksList_t,
-                          gene_position_breaks=gene_position_breaks,
-                          x.center=x.center,
-                          hclust_method=hclust_method,
-                          layout_lmat=force_layout[["lmat"]],
-                          layout_lhei=force_layout[["lhei"]],
-                          layout_lwid=force_layout[["lwid"]],
-                          useRaster=useRaster)
+    # .plot_cnv_observations(infercnv_obj=infercnv_obj,
+    #                       obs_data=obs_data,
+    #                       file_base_name=out_dir,
+    #                       do_plot=!is.na(output_format),
+    #                       output_filename_prefix=output_filename,
+    #                       cluster_contig=ref_contig,
+    #                       contigs=contigs,
+    #                       contig_colors=ct.colors[contigs],
+    #                       contig_labels=contig_labels,
+    #                       contig_names=contig_names,
+    #                       col_pal=custom_pal,
+    #                       contig_seps=col_sep,
+    #                       num_obs_groups=k_obs_groups,
+    #                       obs_annotations_groups=obs_annotations_groups,
+    #                       obs_annotations_names=obs_annotations_names,
+    #                       grouping_key_coln=grouping_key_coln[1],
+    #                       cluster_by_groups=cluster_by_groups,
+    #                       cnv_title=title,
+    #                       cnv_obs_title=obs_title,
+    #                       contig_lab_size=contig_cex,
+    #                       breaksList=breaksList_t,
+    #                       gene_position_breaks=gene_position_breaks,
+    #                       x.center=x.center,
+    #                       hclust_method=hclust_method,
+    #                       layout_lmat=force_layout[["lmat"]],
+    #                       layout_lhei=force_layout[["lhei"]],
+    #                       layout_lwid=force_layout[["lwid"]],
+    #                       useRaster=useRaster)
     obs_data <- NULL
 
     if(!is.null(ref_idx)){
-        .plot_cnv_references(infercnv_obj=infercnv_obj,
-                            ref_data=ref_data_t,
-                            ref_groups=ref_groups,
-                            name_ref_groups=name_ref_groups,
-                            cluster_references=cluster_references,
-                            hclust_method=hclust_method,
-                            grouping_key_coln=grouping_key_coln[2],
-                            col_pal=custom_pal,
-                            contig_seps=col_sep,
-                            file_base_name=out_dir,
-                            do_plot=!is.na(output_format),
-                            output_filename_prefix=output_filename,
-                            cnv_ref_title=ref_title,
-                            breaksList=breaksList_t,
-                            gene_position_breaks=gene_position_breaks,
-                            x.center=x.center,
-                            layout_add=TRUE,
-                            useRaster=useRaster)
+        # .plot_cnv_references(infercnv_obj=infercnv_obj,
+        #                     ref_data=ref_data_t,
+        #                     ref_groups=ref_groups,
+        #                     name_ref_groups=name_ref_groups,
+        #                     cluster_references=cluster_references,
+        #                     hclust_method=hclust_method,
+        #                     grouping_key_coln=grouping_key_coln[2],
+        #                     col_pal=custom_pal,
+        #                     contig_seps=col_sep,
+        #                     file_base_name=out_dir,
+        #                     do_plot=!is.na(output_format),
+        #                     output_filename_prefix=output_filename,
+        #                     cnv_ref_title=ref_title,
+        #                     breaksList=breaksList_t,
+        #                     gene_position_breaks=gene_position_breaks,
+        #                     x.center=x.center,
+        #                     layout_add=TRUE,
+        #                     useRaster=useRaster)
     }
     if (! is.na(output_format)) {
         dev.off()
@@ -608,7 +608,7 @@ plot_cnv <- function(infercnv_obj,
   
             obs_dendrogram <- as.dendrogram(obs_hcl)
             ordered_names <- obs_hcl$labels[obs_hcl$order]
-            split_groups <- cutree(obs_hcl, k=num_obs_groups)
+            split_groups <- scipy_cutree(obs_hcl, k=num_obs_groups)
             split_groups <- split_groups[ordered_names]
             hcl_obs_annotations_groups <- obs_annotations_groups[ordered_names]
 
@@ -665,7 +665,7 @@ plot_cnv <- function(infercnv_obj,
             else {
                 data_to_cluster <- obs_data[cell_indices_in_group, hcl_group_indices, drop=FALSE]
                 flog.info(paste("group size being clustered: ", paste(dim(data_to_cluster), collapse=","), sep=" "))
-                group_obs_hcl <- gpuHclust(gpuDist(data_to_cluster), method=hclust_method)
+                group_obs_hcl <- scipy_hclust(data_to_cluster, method=hclust_method)
                 ordered_names <- c(ordered_names, group_obs_hcl$labels[group_obs_hcl$order])
 
                 if (isfirst) {
@@ -699,14 +699,14 @@ plot_cnv <- function(infercnv_obj,
         # HCL with a inversely weighted euclidean distance.
         flog.info(paste("clustering observations via method: ", hclust_method, sep=""))
         if (nrow(obs_data) > 1) {
-            obs_hcl <- gpuHclust(gpuDist(obs_data[, hcl_group_indices]), method=hclust_method)
+            obs_hcl <- scipy_hclust(obs_data[, hcl_group_indices], method=hclust_method)
                                             
             write.tree(as.phylo(obs_hcl),
                        file=paste(file_base_name, sprintf("%s.observations_dendrogram.txt", output_filename_prefix), sep=.Platform$file.sep))
             
             obs_dendrogram <- as.dendrogram(obs_hcl)
             ordered_names <- obs_hcl$labels[obs_hcl$order]
-            split_groups <- cutree(obs_hcl, k=num_obs_groups)
+            split_groups <- scipy_cutree(obs_hcl, k=num_obs_groups)
             split_groups <- split_groups[ordered_names]
 
             # Make a file of members of each group
@@ -999,7 +999,7 @@ plot_cnv <- function(infercnv_obj,
             if (cluster_references) {
                 order_idx <- lapply(ref_groups, function(ref_grp) {
                     if (cluster_references && length(ref_grp) > 2) {
-                        ref_hcl <- gpuHclust(gpuDist(t(ref_data[, ref_grp])), method=hclust_method)
+                        ref_hcl <- scipy_hclust(t(ref_data[, ref_grp]), method=hclust_method)
                         ref_grp <- ref_grp[ref_hcl$order]
                     }
                     ref_grp
@@ -1016,7 +1016,7 @@ plot_cnv <- function(infercnv_obj,
         }
         else {
             if (cluster_references) {
-                ref_hcl <- gpuHclust(gpuDist(t(ref_data)), method=hclust_method)  # all ref_data is part of the only group
+                ref_hcl <- scipy_hclust(t(ref_data), method=hclust_method)  # all ref_data is part of the only group
                 # order_idx <- unlist(ref_groups)[ref_hcl$order]
                 order_idx = ref_hcl$order # ref_data has been reindexed beforehand in the calling method
             }
@@ -2634,7 +2634,7 @@ gdist <-
         )
 
     if(method %in% COMMON_METHODS) {
-        d <- gpuDist(x=x, method=method, diag=diag, upper=upper, p=MoreArgs$p)
+        d <- scipy_dist(x=x, method=method, p=MoreArgs$p)
     } else if (method %in% c("correlation","correlation.of.observations","correlation.of.variables")) {
     ##d <- .call.FUN(FUN,x,MoreArgs)
     d <- FUN(x, method=MoreArgs$method, use=MoreArgs$use)
